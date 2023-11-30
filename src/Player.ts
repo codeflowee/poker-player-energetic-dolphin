@@ -65,6 +65,8 @@ export class Player {
           betCallback(gameState.minimum_raise);
         } else if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
           betCallback(gameState.current_buy_in);
+        } else if (playerRisk > riskTolerance) {
+          betCallback(gameState.current_buy_in);
         } else {
           betCallback(0);
         }
