@@ -31,8 +31,8 @@ export class Player {
       })
 
 
-      if (gameState.bet_index === 0) {
-        console.log('Execute go in');
+      if (gameState.round === 0) {
+        console.log('Execute round 0');
 
         betCallback(gameState.current_buy_in);
       } else if (riskIndex > risk) {
