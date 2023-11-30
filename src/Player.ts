@@ -36,7 +36,7 @@ export class Player {
         hasPlayerPair = playerCardsArray[0] === playerCardsArray[1];
       }
 
-      const riskTolerance = 8;
+      const riskTolerance = 7;
       let playerRisk = 0;
       playerCardsArray?.forEach((card) => {
         const cardIndex = cardRankings.ranks.indexOf(card);
@@ -53,7 +53,7 @@ export class Player {
           this.logMe('Has player pair, betting:', gameState.minimum_raise);
 
           betCallback(gameState.minimum_raise);
-        } else if (playerRisk >= riskTolerance) {
+        } else if (playerRisk > riskTolerance) {
           betCallback(gameState.current_buy_in);
         } else {
           betCallback(0);
