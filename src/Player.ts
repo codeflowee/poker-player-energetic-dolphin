@@ -1,7 +1,8 @@
 import { GameState } from "./interfaces/GameState";
 import cardRankings from "./cardRankings";
 import Logsene from "logsene-js";
-
+import hasPairInHandWithPlayerCards from './rankFunctions/hasPairInHandWithPlayerCards'
+import hasThreeOfKind from "./rankFunctions/hasThreeOfKind";
 const logger = new Logsene('f94e5824-2c17-4c45-a019-92598a343b73')
 
 export class Player {
@@ -21,7 +22,7 @@ export class Player {
       logger.log('info', 'Player', { player })
       console.log('Player', { player })
 
-      const playerCardsArray = player.hole_cards?.map(({ rank }) => rank);
+      const playerCardsArray = player.hole_cards?.map(({ rank }) => rank) ?? [];
 
       let hasPlayerPair = false;
 
@@ -41,30 +42,26 @@ export class Player {
         }
       })
 
+      if (!tableCardsArray.length) {
+        // Before there are table cards
 
-      // Before Table cards
-      if (hasPlayerPair) {
-        logger.log('info', 'Executing has pair', { playerCardsArray });
-        console.log('Executing has pair', { playerCardsArray });
-
-        betCallback(gameState.current_buy_in);
-      } else if (!tableCardsArray.length && playerRisk > riskTolerance) {
-        logger.log('info', 'Execute above risk', { risk: riskTolerance, playerRisk });
-        console.log('Execute above risk', { risk: riskTolerance, playerRisk });
-
-        betCallback(gameState.current_buy_in);
-
-        // WHen game has started
-      } else if (hasPairWithTable) {
-        logger.log('info', 'Execute hasPairWithTable');
-        console.log('Execute hasPairWithTable');
-
-        betCallback(gameState.current_buy_in);
+        if (hasPlayerPair) {
+          betCallback(gameState.minimum_raise);
+        } else if (playerRisk > riskTolerance) {
+          betCallback(gameState.current_buy_in);
+        } else {
+          betCallback(0);
+        }
       } else {
-        logger.log('info', 'Execute fold');
-        console.log('Execute fold');
+        // When there are table cards
 
-        betCallback(0);
+        if (hasThreeOfKind(playerCardsArray, tableCardsArray)) {
+          betCallback(gameState.minimum_raise);
+        } else if (hasPlayerPair || hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
+          betCallback(gameState.current_buy_in);
+        } else {
+          betCallback(0);
+        }
       }
     }
   }
