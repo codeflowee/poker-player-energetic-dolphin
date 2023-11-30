@@ -6,6 +6,8 @@ export class Player {
 
     // Our player
     const player = gameState.players.find(({ name }) => name === 'Energetic Dolphin');
+    // Cards on the table
+    const tableCards = gameState.community_cards;
 
     console.log('player', player)
 
