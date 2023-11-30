@@ -70,7 +70,7 @@ export class Player {
           this.log('Start Game. ELSE BLOCK WE CALL with:', call);
           // TODO Fold if someone raised
           // TODO Check only if we are big blind
-          betCallback(call);
+          betCallback(gameState.current_buy_in > 300 ? 0: call);
         }
       } else {
         // When there are table cards
@@ -78,8 +78,10 @@ export class Player {
           this.log('In Game, three of a kind, all in with', allIn);
           betCallback(allIn);
         } else if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
-          this.log('In Game, have pair, calling', call);
-          betCallback(call);
+          const amount = gameState.current_buy_in > 300 ? 0: call;
+          this.log('In Game, Current buy in', gameState.current_buy_in);
+          this.log('In Game, have pair, calling with ', amount);
+          betCallback(amount);
         } else if (playerRisk > riskTolerance) {
           this.log('In Game, Have above risk tolerance, calling with:', call);
           betCallback(gameState.current_buy_in);
