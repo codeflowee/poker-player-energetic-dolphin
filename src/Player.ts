@@ -52,8 +52,8 @@ export class Player {
         // Before there are table cards
         if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
           if (highCard) {
-            this.log('Start Game. Have strong pair, all in with', allIn);
-            betCallback(allIn);
+            this.log('Start Game. Have strong pair, all in with', call);
+            betCallback(call);
           } else {
             this.log('Start Game. Have weak pair, raise', raise);
             betCallback(raise);
@@ -68,8 +68,9 @@ export class Player {
       } else {
         // When there are table cards
         if (hasThreeOfKind(playerCardsArray, tableCardsArray) && hasPlayerPair) {
-          this.log('In Game, three of a kind, all in with', allIn);
-          betCallback(allIn);
+          const amount = highCard ? allIn : raise;
+          this.log('In Game, three of a kind, all in with', amount);
+          betCallback(amount);
         } else if (hasThreeOfKind(playerCardsArray, tableCardsArray)) {
           this.log('In Game, three of a kind', call);
           betCallback(call);
