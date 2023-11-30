@@ -1,7 +1,7 @@
 import express from 'express';
 import { Player } from './Player';
 
-const VERSION = "Default TypeScript folding player";
+const VERSION = "1";
 
 const app = express();
 const player = new Player();
@@ -10,7 +10,7 @@ const player = new Player();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', ({}, res) => res.status(200).send('OK'));
+app.get('/', ({ }, res) => res.status(200).send('OK'));
 
 app.post('/', (req, res) => {
     if (req.body.action === 'bet_request') {
