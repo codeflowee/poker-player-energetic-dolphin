@@ -55,7 +55,7 @@ export class Player {
         if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
           this.log('Has player pair, betting:', gameState.minimum_raise);
 
-          betCallback(gameState.minimum_raise);
+          betCallback(gameState.current_buy_in);
         } else if (playerRisk > riskTolerance) {
           betCallback(gameState.current_buy_in);
         } else {
