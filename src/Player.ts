@@ -4,6 +4,7 @@ export class Player {
   public betRequest(gameState: GameState, betCallback: (bet: number) => void): void {
     console.log('betRequest gameState', gameState);
 
+    // Our player
     const player = gameState.players.find(({ name }) => name === 'Energetic Dolphin');
 
     console.log('player', player)
