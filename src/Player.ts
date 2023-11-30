@@ -51,35 +51,29 @@ export class Player {
 
       const raise = gameState.current_buy_in - player.bet + gameState.minimum_raise;
 
-      // WE RAISE ALL THE TIME
-      // NB REMOVE THIS.
-      if (true) {
-        betCallback(raise);
-      } else {
-        if (!tableCardsArray.length) {
-          // Before there are table cards
-          // We shouldn't fold here yet, can still win with table cards
+      if (!tableCardsArray.length) {
+        // Before there are table cards
+        // We shouldn't fold here yet, can still win with table cards
 
-          if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
-            this.log('Has player pair, betting:', gameState.minimum_raise);
-            betCallback(raise);
-          } else if (playerRisk > riskTolerance) {
-            betCallback(raise);
-          } else {
-            betCallback(raise);
-          }
+        if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
+          this.log('Has player pair, betting:', gameState.minimum_raise);
+          betCallback(raise);
+        } else if (playerRisk > riskTolerance) {
+          betCallback(raise);
         } else {
-          // When there are table cards
+          betCallback(raise);
+        }
+      } else {
+        // When there are table cards
 
-          if (hasThreeOfKind(playerCardsArray, tableCardsArray)) {
-            betCallback(gameState.minimum_raise);
-          } else if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
-            betCallback(gameState.current_buy_in);
-          } else if (playerRisk > riskTolerance) {
-            betCallback(gameState.current_buy_in);
-          } else {
-            betCallback(0);
-          }
+        if (hasThreeOfKind(playerCardsArray, tableCardsArray)) {
+          betCallback(gameState.minimum_raise);
+        } else if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
+          betCallback(gameState.current_buy_in);
+        } else if (playerRisk > riskTolerance) {
+          betCallback(gameState.current_buy_in);
+        } else {
+          betCallback(0);
         }
       }
     }
