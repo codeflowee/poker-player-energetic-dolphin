@@ -57,13 +57,17 @@ export class Player {
         // Before there are table cards
         if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
           if (playerRisk > 7) {
+            this.log('Start Game. Have strong pair, all in with', allIn);
             betCallback(allIn);
           } else {
+            this.log('Start Game. Have weak pair, raise', raise);
             betCallback(raise);
           }
         } else if (playerRisk > riskTolerance) {
+          this.log('Start Game. Have above risk tolerance, calling with:', call)
           betCallback(call);
         } else {
+          this.log('Start Game. ELSE BLOCK WE CALL with:', call);
           // TODO Fold if someone raised
           // TODO Check only if we are big blind
           betCallback(call);
@@ -71,16 +75,16 @@ export class Player {
       } else {
         // When there are table cards
         if (hasThreeOfKind(playerCardsArray, tableCardsArray)) {
-          betCallback(player.stack);
+          this.log('In Game, three of a kind, all in with', allIn);
+          betCallback(allIn);
         } else if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
-          if (playerCardsArray[0] === playerCardsArray[1]) {
-            betCallback(allIn);
-          } else {
-            betCallback(call);
-          }
+          this.log('In Game, have pair, calling', call);
+          betCallback(call);
         } else if (playerRisk > riskTolerance) {
+          this.log('In Game, Have above risk tolerance, calling with:', call);
           betCallback(gameState.current_buy_in);
         } else {
+          this.log('In Game, ESLE BLOCK WE ARE FOLDING');
           betCallback(0);
         }
       }
