@@ -40,6 +40,7 @@ export class Player {
       })
 
 
+      // Before Table cards
       if (hasPlayerPair) {
         logger.log('info', 'Executing has pair', { playerCardsArray });
 
@@ -48,6 +49,8 @@ export class Player {
         logger.log('info', 'Execute above risk', { risk, riskIndex });
 
         betCallback(gameState.current_buy_in);
+
+        // WHen game has started
       } else if (hasPairWithTable) {
         logger.log('info', 'Execute hasPairWithTable');
 
