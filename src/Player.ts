@@ -51,15 +51,15 @@ export class Player {
 
       if (!tableCardsArray.length) {
         // Before there are table cards
-
+        // We shouldn't fold here yet, can still win with table cards
+        const raise = gameState.current_buy_in - player.bet + gameState.minimum_raise;
         if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
           this.log('Has player pair, betting:', gameState.minimum_raise);
-
-          betCallback(gameState.current_buy_in);
+          betCallback(raise);
         } else if (playerRisk > riskTolerance) {
-          betCallback(gameState.current_buy_in);
+          betCallback(raise);
         } else {
-          betCallback(0);
+          betCallback(raise);
         }
       } else {
         // When there are table cards
