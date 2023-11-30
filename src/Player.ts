@@ -9,14 +9,14 @@ const logger = new Logsene('f94e5824-2c17-4c45-a019-92598a343b73');
 export class Player {
 
   public log(message: string, anyObj?: any): void {
-    logger.log('info', message, anyObj);
+    // logger.log('info', message, anyObj);
     console.log(message, anyObj);
   }
 
   public betRequest(gameState: GameState, betCallback: (bet: number) => void): void {
     getRank(gameState);
 
-    logger.log('info', 'betRequest', { gameState });
+    // logger.log('info', 'betRequest', { gameState });
     console.log('betRequest', { gameState });
 
     // Our player
@@ -30,7 +30,7 @@ export class Player {
     const tableCardsArray = gameState.community_cards.map(({ rank }) => rank);
 
     if (player) {
-      logger.log('info', 'Player', { player })
+      // logger.log('info', 'Player', { player })
       console.log('Player', { player })
 
       const playerCardsArray = player.hole_cards?.map(({ rank }) => rank) ?? [];
@@ -92,7 +92,7 @@ export class Player {
   }
 
   public showdown(gameState: GameState): void {
-    logger.log('info', 'showdown', { gameState });
+    // logger.log('info', 'showdown', { gameState });
     console.log('showdown', { gameState });
   }
 };
