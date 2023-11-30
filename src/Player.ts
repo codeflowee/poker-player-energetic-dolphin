@@ -120,4 +120,44 @@ class GameClient {
   }
 }
 
-export default GameClient;
+class AggressiveGameClient extends GameClient {
+  public betRequest(gameState: GameState, betCallback: (bet: number) => void): void {
+    const activePlayer = gameState.players[gameState.in_action];
+    const holeCards = activePlayer.hole_cards || [];
+    const communityCards = gameState.community_cards || [];
+
+    // Calculate hand strength based on hole cards and community cards
+    const handStrength = this.calculateHandStrength(holeCards, communityCards);
+
+    // Decide betting strategy based on hand strength and game state
+    let betAmount = 0;
+
+    if (handStrength >= 0.8) {
+      // Very strong hand: All in
+      betAmount = activePlayer.stack;
+    } else if (handStrength >= 0.6) {
+      // Strong hand: Raise aggressively
+      betAmount = gameState.current_buy_in + gameState.minimum_raise * 3;
+    } else if (handStrength >= 0.4) {
+      // Decent hand: Raise moderately
+      betAmount = gameState.current_buy_in + gameState.minimum_raise * 2;
+    } else if (handStrength >= 0.2) {
+      // Weak hand: Raise a bit or call
+      betAmount = gameState.current_buy_in + gameState.minimum_raise;
+    } else {
+      // Very weak hand: Call or fold
+      betAmount = gameState.current_buy_in - activePlayer.bet;
+      if (betAmount < 0) {
+        // Negative bet means fold
+        betAmount = 0;
+      }
+    }
+
+    // Make the bet
+    betCallback(betAmount);
+  }
+}
+
+export default AggressiveGameClient;
+
+// export default GameClient;
