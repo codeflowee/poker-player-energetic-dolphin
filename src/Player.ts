@@ -1,101 +1,107 @@
-import { GameState } from "./interfaces/GameState";
-import cardRankings from "./cardRankings";
-import Logsene from "logsene-js";
-import hasPairInHandWithPlayerCards from './rankFunctions/hasPairInHandWithPlayerCards'
-import hasThreeOfKind from "./rankFunctions/hasThreeOfKind";
-// import getRank from './getRank';
+export interface GameState {
+  tournament_id: string;
+  game_id: string;
+  round: number;
+  bet_index: number;
+  small_blind: number;
+  current_buy_in: number;
+  pot: number;
+  minimum_raise: number;
+  dealer: number;
+  orbits: number;
+  in_action: number;
+  players: Player[];
+  community_cards: Card[];
+}
 
-const logger = new Logsene('f94e5824-2c17-4c45-a019-92598a343b73');
+export interface Card {
+  rank: string;
+  suit: string;
+}
+
+export interface Player {
+  id: number;
+  name: string;
+  status: string;
+  version: string;
+  stack: number;
+  bet: number;
+  hole_cards?: Card[];
+}
+
+const cardRankings = {
+  ranks: ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"],
+  suits: ["hearts", "diamonds", "clubs", "spades"]
+};
+
+function hasPair(playerCards: string[]): boolean {
+  return playerCards[0] === playerCards[1];
+}
+
+function hasThreeOfKind(playerCards: string[], tableCards: string[]): boolean {
+  const allCards = [...playerCards, ...tableCards];
+  const cardsCount = allCards.reduce((countMap, card) => {
+    countMap.set(card, (countMap.get(card) || 0) + 1);
+    return countMap;
+  }, new Map<string, number>());
+
+  return Object.values(cardsCount).some((count) => count >= 3);
+}
+
 export class Player {
 
-  public log(message: string, anyObj?: any): void {
-    // logger.log('info', message, anyObj);
+  private log(message: string, anyObj?: any): void {
     console.log(message, anyObj);
   }
 
-  public betRequest(gameState: GameState, betCallback: (bet: number) => void): void {
-    // getRank(gameState);
+  private evaluateHand(playerCards: string[], tableCards: string[]): number {
+    // Add your own hand evaluation logic here
+    if (hasThreeOfKind(playerCards, tableCards)) {
+      return 3;
+    }
+    if (hasPair(playerCards)) {
+      return 2;
+    }
+    return 1; // Default for a high card or no significant hand
+  }
 
-    // logger.log('info', 'betRequest', { gameState });
+  public betRequest(gameState: GameState, betCallback: (bet: number) => void): void {
     console.log('betRequest', { gameState });
 
-    // Our player
     const player = gameState.players.find(({ name }) => name === 'Energetic Dolphin');
 
-    // Cards on the table
-    const tableCards = gameState.community_cards;
-
-    this.log('Table cards', tableCards);
-
-    const tableCardsArray = gameState.community_cards.map(({ rank }) => rank);
-
     if (player) {
-      // logger.log('info', 'Player', { player })
-      console.log('Player', { player })
+      console.log('Player', { player });
 
-      const playerCardsArray = player.hole_cards?.map(({ rank }) => rank) ?? [];
+      const playerCardsArray = player.hole_cards?.map(({ rank }) => rank) || [];
+      const tableCardsArray = gameState.community_cards.map(({ rank }) => rank);
 
       const riskTolerance = 7;
-      let hasPlayerPair = false;
-      let highCard = false;
-      if (playerCardsArray.length) {
-        hasPlayerPair = playerCardsArray[0] === playerCardsArray[1];
-        highCard = cardRankings.ranks.indexOf(playerCardsArray[0]) > riskTolerance
-          || cardRankings.ranks.indexOf(playerCardsArray[1]) > riskTolerance;
-      }
-
       const allIn = player.stack;
       const call = gameState.current_buy_in - player.bet;
       const raise = gameState.current_buy_in - player.bet + gameState.minimum_raise;
 
-      if (!tableCardsArray.length) {
-        // Before there are table cards
-        if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
-          if (highCard) {
-            this.log('Start Game. Have strong pair, all in with', call);
-            betCallback(call);
-          } else {
-            this.log('Start Game. Have weak pair, raise', raise);
-            betCallback(raise);
-          }
-        } else if (highCard) {
-          this.log('Start Game. Have above risk tolerance, calling with:', call)
-          betCallback(call);
-        } else {
-          this.log('Start Game. ELSE BLOCK WE CALL with:', call);
-          betCallback(gameState.current_buy_in > 300 ? 0 : call);
-        }
+      const handStrength = this.evaluateHand(playerCardsArray, tableCardsArray);
+
+      if (handStrength >= 3) {
+        this.log('In Game, Strong hand, all in with', allIn);
+        betCallback(allIn);
+      } else if (handStrength === 2) {
+        this.log('In Game, Have a pair, raising', raise);
+        betCallback(raise);
+      } else if (handStrength === 1 && gameState.current_buy_in > 300) {
+        this.log('In Game, Above risk tolerance, calling with:', call);
+        betCallback(call);
       } else {
-        // When there are table cards
-        if (hasThreeOfKind(playerCardsArray, tableCardsArray) && hasPlayerPair) {
-          const amount = highCard ? allIn : raise;
-          this.log('In Game, three of a kind, all in with', amount);
-          betCallback(amount);
-        } else if (hasThreeOfKind(playerCardsArray, tableCardsArray)) {
-          this.log('In Game, three of a kind', call);
-          betCallback(call);
-        } else if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
-          const amount = gameState.current_buy_in > 300 ? 0 : call;
-          this.log('In Game, Current buy in', gameState.current_buy_in);
-          this.log('In Game, have pair, calling with ', amount);
-          betCallback(amount);
-        } else if (highCard) {
-          const amount = gameState.current_buy_in > 300 ? 0 : call
-          this.log('In Game, Current buy in', gameState.current_buy_in);
-          this.log('In Game, Have above risk tolerance, calling with:', amount);
-          betCallback(amount);
-        } else {
-          this.log('In Game, ESLE BLOCK WE ARE FOLDING', 0);
-          betCallback(gameState.current_buy_in > 300 ? 0 : call);
-        }
+        this.log('In Game, Folding', 0);
+        betCallback(gameState.current_buy_in > 300 ? 0 : call);
       }
     }
   }
 
   public showdown(gameState: GameState): void {
-    // logger.log('info', 'showdown', { gameState });
     console.log('showdown', { gameState });
   }
-};
+}
 
 export default Player;
