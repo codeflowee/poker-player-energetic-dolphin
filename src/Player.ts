@@ -3,6 +3,7 @@ import cardRankings from "./cardRankings";
 import Logsene from "logsene-js";
 import hasPairInHandWithPlayerCards from './rankFunctions/hasPairInHandWithPlayerCards'
 import hasThreeOfKind from "./rankFunctions/hasThreeOfKind";
+import checkRank from "./checkRank";
 
 const logger = new Logsene('f94e5824-2c17-4c45-a019-92598a343b73');
 export class Player {
@@ -13,6 +14,8 @@ export class Player {
   }
 
   public betRequest(gameState: GameState, betCallback: (bet: number) => void): void {
+    checkRank(gameState)
+
     logger.log('info', 'betRequest', { gameState });
     console.log('betRequest', { gameState });
 
@@ -70,7 +73,7 @@ export class Player {
           this.log('Start Game. ELSE BLOCK WE CALL with:', call);
           // TODO Fold if someone raised
           // TODO Check only if we are big blind
-          betCallback(gameState.current_buy_in > 300 ? 0: call);
+          betCallback(gameState.current_buy_in > 300 ? 0 : call);
         }
       } else {
         // When there are table cards
@@ -78,7 +81,7 @@ export class Player {
           this.log('In Game, three of a kind, all in with', allIn);
           betCallback(allIn);
         } else if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
-          const amount = gameState.current_buy_in > 300 ? 0: call;
+          const amount = gameState.current_buy_in > 300 ? 0 : call;
           this.log('In Game, Current buy in', gameState.current_buy_in);
           this.log('In Game, have pair, calling with ', amount);
           betCallback(amount);
