@@ -3,9 +3,15 @@ import cardRankings from "./cardRankings";
 import Logsene from "logsene-js";
 import hasPairInHandWithPlayerCards from './rankFunctions/hasPairInHandWithPlayerCards'
 import hasThreeOfKind from "./rankFunctions/hasThreeOfKind";
-const logger = new Logsene('f94e5824-2c17-4c45-a019-92598a343b73')
 
+const logger = new Logsene('f94e5824-2c17-4c45-a019-92598a343b73');
 export class Player {
+
+  public logMe(message: string, anyObj?: any): void {
+    logger.log('info', message, anyObj);
+    console.log(message, anyObj);
+  }
+
   public betRequest(gameState: GameState, betCallback: (bet: number) => void): void {
     logger.log('info', 'betRequest', { gameState });
     console.log('betRequest', { gameState });
@@ -45,7 +51,8 @@ export class Player {
       if (!tableCardsArray.length) {
         // Before there are table cards
 
-        if (hasPlayerPair) {
+        if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
+          this.logMe('Has player pair, betting:', gameState.minimum_raise);
           betCallback(gameState.minimum_raise);
         } else if (playerRisk > riskTolerance) {
           betCallback(gameState.current_buy_in);
@@ -57,7 +64,7 @@ export class Player {
 
         if (hasThreeOfKind(playerCardsArray, tableCardsArray)) {
           betCallback(gameState.minimum_raise);
-        } else if (hasPlayerPair || hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
+        } else if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
           betCallback(gameState.current_buy_in);
         } else {
           betCallback(0);
