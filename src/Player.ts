@@ -7,13 +7,25 @@ export class Player {
 
     // Our player
     const player = gameState.players.find(({ name }) => name === 'Energetic Dolphin');
+
     // Cards on the table
     const tableCards = gameState.community_cards;
+    const minimumRaise = gameState.minimum_raise;
 
-    console.log('player', player)
+    const tableCardsArray = tableCards.map(({ rank }) => rank);
 
     if (player) {
+      console.log('player', player)
+
+      const playerCardsArray = player.hole_cards?.map(({ rank }) => rank);
+
+      const includesTableCard = playerCardsArray?.find((card) => tableCardsArray.includes(card));
+
       betCallback(player.stack);
+      // if (includesTableCard) {
+      // } else {
+      //   betCallback()
+      // }
     }
   }
 
