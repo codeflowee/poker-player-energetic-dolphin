@@ -23,7 +23,7 @@ export class Player {
       if (gameState.bet_index === 0) {
         betCallback(gameState.current_buy_in)
       } else if (includesTableCard) {
-        betCallback(player.stack);
+        betCallback(gameState.current_buy_in);
       } else {
         betCallback(0)
       }
