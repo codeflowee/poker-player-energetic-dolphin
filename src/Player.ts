@@ -36,7 +36,7 @@ export class Player {
 
         betCallback(gameState.current_buy_in);
       } else if (riskIndex > risk) {
-        console.log('Execute above risk');
+        console.log('Execute above risk', { risk, riskIndex });
 
         betCallback(gameState.current_buy_in);
       } else if (includesTableCard) {
