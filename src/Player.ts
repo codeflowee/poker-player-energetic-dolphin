@@ -73,7 +73,7 @@ export class Player {
           this.log('In Game, three of a kind, all in with', allIn);
           betCallback(allIn);
         } else if (hasThreeOfKind(playerCardsArray, tableCardsArray)) {
-          this.log('In Game, three of a kind');
+          this.log('In Game, three of a kind', call);
           betCallback(call);
         } else if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
           const amount = gameState.current_buy_in > 300 ? 0 : call;
