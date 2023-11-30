@@ -31,15 +31,10 @@ export class Player {
       })
 
 
-      if (gameState.round === 0) {
-        console.log('Execute round 0');
-
-        betCallback(gameState.current_buy_in);
-      } else if (riskIndex > risk) {
+      if (!tableCardsArray.length && riskIndex > risk) {
         console.log('Execute above risk', { risk, riskIndex });
 
         betCallback(gameState.current_buy_in);
-        // } else if () {
       } else if (hasPair) {
         console.log('Execute hasPair');
 
