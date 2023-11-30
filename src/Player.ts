@@ -1,9 +1,12 @@
 import { GameState } from "./interfaces/GameState";
 import cardRankings from "./cardRankings";
+import Logsene from "logsene-js";
+
+const logger = new Logsene('cc28f7c9-ee84-48c2-ac14-c09b93a79e84')
 
 export class Player {
   public betRequest(gameState: GameState, betCallback: (bet: number) => void): void {
-    console.log('betRequest gameState', gameState);
+    logger.log('info', 'betRequest', { gameState });
 
     // Our player
     const player = gameState.players.find(({ name }) => name === 'Energetic Dolphin');
@@ -14,7 +17,7 @@ export class Player {
     const tableCardsArray = gameState.community_cards.map(({ rank }) => rank);
 
     if (player) {
-      console.log('player', player)
+      logger.log('info', 'Player', { player })
 
       const playerCardsArray = player.hole_cards?.map(({ rank }) => rank);
 
@@ -32,15 +35,15 @@ export class Player {
 
 
       if (!tableCardsArray.length && riskIndex > risk) {
-        console.log('Execute above risk', { risk, riskIndex });
+        logger.log('info', 'Execute above risk', { risk, riskIndex });
 
         betCallback(gameState.current_buy_in);
       } else if (hasPair) {
-        console.log('Execute hasPair');
+        logger.log('info', 'Execute hasPair');
 
         betCallback(gameState.current_buy_in);
       } else {
-        console.log('Execute fold');
+        logger.log('info', 'Execute fold');
 
         betCallback(0);
       }
@@ -48,7 +51,7 @@ export class Player {
   }
 
   public showdown(gameState: GameState): void {
-    console.log('gameState gameState', gameState);
+    logger.log('info', 'showdown', { gameState });
   }
 };
 
