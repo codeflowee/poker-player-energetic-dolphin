@@ -32,12 +32,20 @@ export class Player {
 
 
       if (gameState.bet_index === 0) {
+        console.log('Execute go in');
+
         betCallback(gameState.current_buy_in);
       } else if (riskIndex > risk) {
+        console.log('Execute above risk');
+
         betCallback(gameState.current_buy_in);
       } else if (includesTableCard) {
+        console.log('Execute includesTableCard');
+
         betCallback(gameState.current_buy_in);
       } else {
+        console.log('Execute fold');
+
         betCallback(0)
       }
     }
