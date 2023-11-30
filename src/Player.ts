@@ -22,7 +22,10 @@ export class Player {
     // Cards on the table
     const tableCards = gameState.community_cards;
 
+    this.log('Table cards', tableCards);
+
     const tableCardsArray = gameState.community_cards.map(({ rank }) => rank);
+
 
     if (player) {
       logger.log('info', 'Player', { player })
