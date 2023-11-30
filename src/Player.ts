@@ -28,75 +28,91 @@ export interface Player {
   bet: number;
   hole_cards?: Card[];
 }
-
-const cardRankings = {
-  ranks: ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"],
-  suits: ["hearts", "diamonds", "clubs", "spades"]
-};
-
-function hasPair(playerCards: string[]): boolean {
-  return playerCards[0] === playerCards[1];
-}
-
-function hasThreeOfKind(playerCards: string[], tableCards: string[]): boolean {
-  const allCards = [...playerCards, ...tableCards];
-  const cardsCount = allCards.reduce((countMap, card) => {
-    countMap.set(card, (countMap.get(card) || 0) + 1);
-    return countMap;
-  }, new Map<string, number>());
-
-  return Object.values(cardsCount).some((count) => count >= 3);
-}
-
-export class Player {
-
-  private log(message: string, anyObj?: any): void {
-    console.log(message, anyObj);
-  }
-
-  private evaluateHand(playerCards: string[], tableCards: string[]): number {
-    // Add your own hand evaluation logic here
-    if (hasThreeOfKind(playerCards, tableCards)) {
-      return 3;
-    }
-    if (hasPair(playerCards)) {
-      return 2;
-    }
-    return 1; // Default for a high card or no significant hand
-  }
-
+class GameClient {
   public betRequest(gameState: GameState, betCallback: (bet: number) => void): void {
-    console.log('betRequest', { gameState });
+    const activePlayer = gameState.players[gameState.in_action];
+    const holeCards = activePlayer.hole_cards || [];
+    const communityCards = gameState.community_cards || [];
 
-    const player = gameState.players.find(({ name }) => name === 'Energetic Dolphin');
+    // Calculate hand strength based on hole cards and community cards
+    const handStrength = this.calculateHandStrength(holeCards, communityCards);
 
-    if (player) {
-      console.log('Player', { player });
+    // Decide betting strategy based on hand strength and game state
+    let betAmount = 0;
 
-      const playerCardsArray = player.hole_cards?.map(({ rank }) => rank) || [];
-      const tableCardsArray = gameState.community_cards.map(({ rank }) => rank);
-
-      const riskTolerance = 7;
-      const allIn = player.stack;
-      const call = gameState.current_buy_in - player.bet;
-      const raise = gameState.current_buy_in - player.bet + gameState.minimum_raise;
-
-      const handStrength = this.evaluateHand(playerCardsArray, tableCardsArray);
-
-      if (handStrength >= 3) {
-        this.log('In Game, Strong hand, all in with', allIn);
-        betCallback(allIn);
-      } else if (handStrength === 2) {
-        this.log('In Game, Have a pair, raising', raise);
-        betCallback(raise);
-      } else if (handStrength === 1 && gameState.current_buy_in > 300) {
-        this.log('In Game, Above risk tolerance, calling with:', call);
-        betCallback(call);
-      } else {
-        this.log('In Game, Folding', 0);
-        betCallback(gameState.current_buy_in > 300 ? 0 : call);
+    if (handStrength >= 0.7) {
+      // Strong hand: All in
+      betAmount = activePlayer.stack;
+    } else if (handStrength >= 0.5) {
+      // Good hand: Raise
+      betAmount = gameState.current_buy_in + gameState.minimum_raise;
+    } else {
+      // Weak hand: Call or fold
+      betAmount = gameState.current_buy_in - activePlayer.bet;
+      if (betAmount < 0) {
+        // Negative bet means fold
+        betAmount = 0;
       }
     }
+
+    // Make the bet
+    betCallback(betAmount);
+  }
+
+  // Helper function to calculate hand strength
+  public calculateHandStrength(holeCards: Card[], communityCards: Card[]): number {
+    const allCards = [...holeCards, ...communityCards];
+
+    // Sort cards by rank
+    allCards.sort((a, b) => this.compareRanks(a.rank, b.rank));
+
+    // Check for specific hand combinations
+    if (this.isRoyalFlush(allCards)) {
+      return 1.0; // Highest hand strength for Royal Flush
+    } else if (this.isStraightFlush(allCards)) {
+      return 0.9; // High hand strength for Straight Flush
+    } else if (this.isFourOfAKind(allCards)) {
+      return 0.8; // High hand strength for Four of a Kind
+    }
+    // Add more conditions for other hand combinations like Full House, Flush, Straight, etc.
+
+    // If no specific hand is detected, return a value based on the highest card
+    return this.getHighCardStrength(allCards);
+  }
+
+  // Helper function to compare ranks
+  private compareRanks(rankA: string, rankB: string): number {
+    const rankOrder = "23456789TJQKA";
+    return rankOrder.indexOf(rankA) - rankOrder.indexOf(rankB);
+  }
+
+  // Helper function to check for a Royal Flush
+  private isRoyalFlush(cards: Card[]): boolean {
+    // Implement logic to check for a Royal Flush
+    // ...
+    return false;
+  }
+
+  // Helper function to check for a Straight Flush
+  private isStraightFlush(cards: Card[]): boolean {
+    // Implement logic to check for a Straight Flush
+    // ...
+    return false;
+  }
+
+  // Helper function to check for Four of a Kind
+  private isFourOfAKind(cards: Card[]): boolean {
+    // Implement logic to check for Four of a Kind
+    // ...
+    return false;
+  }
+
+  // Helper function to get the strength based on the highest card
+  private getHighCardStrength(cards: Card[]): number {
+    // Return a value between 0 and 1 based on the highest card
+    const highestCard = cards[cards.length - 1].rank;
+    const rankOrder = "23456789TJQKA";
+    return rankOrder.indexOf(highestCard) / (rankOrder.length - 1);
   }
 
   public showdown(gameState: GameState): void {
@@ -104,4 +120,4 @@ export class Player {
   }
 }
 
-export default Player;
+export default GameClient;
