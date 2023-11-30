@@ -7,7 +7,7 @@ import hasThreeOfKind from "./rankFunctions/hasThreeOfKind";
 const logger = new Logsene('f94e5824-2c17-4c45-a019-92598a343b73');
 export class Player {
 
-  public logMe(message: string, anyObj?: any): void {
+  public log(message: string, anyObj?: any): void {
     logger.log('info', message, anyObj);
     console.log(message, anyObj);
   }
@@ -50,7 +50,7 @@ export class Player {
         // Before there are table cards
 
         if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
-          this.logMe('Has player pair, betting:', gameState.minimum_raise);
+          this.log('Has player pair, betting:', gameState.minimum_raise);
 
           betCallback(gameState.minimum_raise);
         } else if (playerRisk > riskTolerance) {
