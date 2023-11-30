@@ -49,28 +49,35 @@ export class Player {
         }
       })
 
+      const allIn = player.stack;
+      const call = gameState.current_buy_in - player.bet;
       const raise = gameState.current_buy_in - player.bet + gameState.minimum_raise;
 
       if (!tableCardsArray.length) {
         // Before there are table cards
-        // We shouldn't fold here yet, can still win with table cards
-
         if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
-          this.log('Has player pair, betting:', gameState.minimum_raise);
-
-          betCallback(raise);
+          if (playerRisk > 7) {
+            betCallback(allIn);
+          } else {
+            betCallback(raise);
+          }
         } else if (playerRisk > riskTolerance) {
-          betCallback(raise);
+          betCallback(call);
         } else {
-          betCallback(raise);
+          // TODO Fold if someone raised
+          // TODO Check only if we are big blind
+          betCallback(call);
         }
       } else {
         // When there are table cards
-
         if (hasThreeOfKind(playerCardsArray, tableCardsArray)) {
-          betCallback(raise);
+          betCallback(player.stack);
         } else if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
-          betCallback(gameState.current_buy_in);
+          if (playerCardsArray[0] === playerCardsArray[1]) {
+            betCallback(allIn);
+          } else {
+            betCallback(call);
+          }
         } else if (playerRisk > riskTolerance) {
           betCallback(gameState.current_buy_in);
         } else {
