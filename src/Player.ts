@@ -1,4 +1,5 @@
 import { GameState } from "./interfaces/GameState";
+import cardRankings from "./cardRankings";
 
 export class Player {
   public betRequest(gameState: GameState, betCallback: (bet: number) => void): void {
