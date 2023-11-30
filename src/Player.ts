@@ -41,6 +41,8 @@ export class Player {
 
 
       if (hasPlayerPair) {
+        logger.log('info', 'Executing has pair', { playerCardsArray });
+
         betCallback(gameState.current_buy_in);
       } else if (!tableCardsArray.length && riskIndex > risk) {
         logger.log('info', 'Execute above risk', { risk, riskIndex });
