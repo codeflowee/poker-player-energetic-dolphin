@@ -38,7 +38,7 @@ export class Player {
       const riskTolerance = 7;
       let hasPlayerPair = false;
       let highCard = false;
-      if (playerCardsArray) {
+      if (playerCardsArray.length) {
         hasPlayerPair = playerCardsArray[0] === playerCardsArray[1];
         highCard = cardRankings.ranks.indexOf(playerCardsArray[0]) > riskTolerance
           || cardRankings.ranks.indexOf(playerCardsArray[1]) > riskTolerance;
@@ -63,8 +63,6 @@ export class Player {
           betCallback(call);
         } else {
           this.log('Start Game. ELSE BLOCK WE CALL with:', call);
-          // TODO Fold if someone raised
-          // TODO Check only if we are big blind
           betCallback(gameState.current_buy_in > 300 ? 0 : call);
         }
       } else {
