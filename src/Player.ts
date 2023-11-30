@@ -18,7 +18,7 @@ export class Player {
 
       const playerCardsArray = player.hole_cards?.map(({ rank }) => rank);
 
-      const includesTableCard = playerCardsArray?.find((card) => tableCardsArray.includes(card));
+      const hasPair = playerCardsArray?.find((card) => tableCardsArray.includes(card));
 
       const risk = 9;
       let riskIndex = 0;
@@ -39,14 +39,15 @@ export class Player {
         console.log('Execute above risk', { risk, riskIndex });
 
         betCallback(gameState.current_buy_in);
-      } else if (includesTableCard) {
-        console.log('Execute includesTableCard');
+        // } else if () {
+      } else if (hasPair) {
+        console.log('Execute hasPair');
 
         betCallback(gameState.current_buy_in);
       } else {
         console.log('Execute fold');
 
-        betCallback(0)
+        betCallback(0);
       }
     }
   }
