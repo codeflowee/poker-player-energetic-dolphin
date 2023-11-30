@@ -19,7 +19,7 @@ export class Player {
     if (player) {
       logger.log('info', 'Player', { player })
 
-      const playerCardsArray = player.hole_cards.map(({ rank }) => rank);
+      const playerCardsArray = player.hole_cards?.map(({ rank }) => rank);
 
       let hasPlayerPair = false;
 
@@ -41,7 +41,7 @@ export class Player {
 
 
       if (hasPlayerPair) {
-        betCallback(player.stack);
+        betCallback(gameState.current_buy_in);
       } else if (!tableCardsArray.length && riskIndex > risk) {
         logger.log('info', 'Execute above risk', { risk, riskIndex });
 
