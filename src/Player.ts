@@ -6,6 +6,8 @@ export class Player {
 
     const player = gameState.players.find(({ name }) => name === 'Energetic Dolphin');
 
+    console.log('player', player)
+
     if (player) {
       betCallback(player.stack);
     }
