@@ -29,28 +29,20 @@ export class Player {
 
     const tableCardsArray = gameState.community_cards.map(({ rank }) => rank);
 
-
     if (player) {
       logger.log('info', 'Player', { player })
       console.log('Player', { player })
 
       const playerCardsArray = player.hole_cards?.map(({ rank }) => rank) ?? [];
 
+      const riskTolerance = 7;
       let hasPlayerPair = false;
-
+      let highCard = false;
       if (playerCardsArray) {
         hasPlayerPair = playerCardsArray[0] === playerCardsArray[1];
+        highCard = cardRankings.ranks.indexOf(playerCardsArray[0]) > riskTolerance
+          || cardRankings.ranks.indexOf(playerCardsArray[1]) > riskTolerance;
       }
-
-      const riskTolerance = 7;
-      let playerRisk = 0;
-      playerCardsArray?.forEach((card) => {
-        const cardIndex = cardRankings.ranks.indexOf(card);
-
-        if (cardIndex > playerRisk) {
-          playerRisk = cardIndex;
-        }
-      })
 
       const allIn = player.stack;
       const call = gameState.current_buy_in - player.bet;
@@ -59,14 +51,14 @@ export class Player {
       if (!tableCardsArray.length) {
         // Before there are table cards
         if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
-          if (playerRisk > 7) {
+          if (highCard) {
             this.log('Start Game. Have strong pair, all in with', allIn);
             betCallback(allIn);
           } else {
             this.log('Start Game. Have weak pair, raise', raise);
             betCallback(raise);
           }
-        } else if (playerRisk > riskTolerance) {
+        } else if (highCard) {
           this.log('Start Game. Have above risk tolerance, calling with:', call)
           betCallback(call);
         } else {
@@ -77,19 +69,22 @@ export class Player {
         }
       } else {
         // When there are table cards
-        if (hasThreeOfKind(playerCardsArray, tableCardsArray)) {
+        if (hasThreeOfKind(playerCardsArray, tableCardsArray) && hasPlayerPair) {
           this.log('In Game, three of a kind, all in with', allIn);
           betCallback(allIn);
+        } else if (hasThreeOfKind(playerCardsArray, tableCardsArray)) {
+          this.log('In Game, three of a kind');
+          betCallback(call);
         } else if (hasPairInHandWithPlayerCards(playerCardsArray, tableCardsArray)) {
           const amount = gameState.current_buy_in > 300 ? 0 : call;
           this.log('In Game, Current buy in', gameState.current_buy_in);
           this.log('In Game, have pair, calling with ', amount);
           betCallback(amount);
-        } else if (playerRisk > riskTolerance) {
+        } else if (highCard) {
           this.log('In Game, Have above risk tolerance, calling with:', call);
-          betCallback(gameState.current_buy_in);
+          betCallback(call);
         } else {
-          this.log('In Game, ESLE BLOCK WE ARE FOLDING');
+          this.log('In Game, ESLE BLOCK WE ARE FOLDING', 0);
           betCallback(0);
         }
       }
