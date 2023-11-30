@@ -10,9 +10,8 @@ export class Player {
 
     // Cards on the table
     const tableCards = gameState.community_cards;
-    const minimumRaise = gameState.minimum_raise;
 
-    const tableCardsArray = tableCards.map(({ rank }) => rank);
+    const tableCardsArray = gameState.community_cards.map(({ rank }) => rank);
 
     if (player) {
       console.log('player', player)
@@ -21,11 +20,13 @@ export class Player {
 
       const includesTableCard = playerCardsArray?.find((card) => tableCardsArray.includes(card));
 
-      betCallback(player.stack);
-      // if (includesTableCard) {
-      // } else {
-      //   betCallback()
-      // }
+      if (gameState.bet_index === 0) {
+        betCallback(gameState.current_buy_in)
+      } else if (includesTableCard) {
+        betCallback(player.stack);
+      } else {
+        betCallback(0)
+      }
     }
   }
 
