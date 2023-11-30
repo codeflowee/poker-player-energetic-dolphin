@@ -19,9 +19,15 @@ export class Player {
     if (player) {
       logger.log('info', 'Player', { player })
 
-      const playerCardsArray = player.hole_cards?.map(({ rank }) => rank);
+      const playerCardsArray = player.hole_cards.map(({ rank }) => rank);
 
-      const hasPair = playerCardsArray?.find((card) => tableCardsArray.includes(card));
+      let hasPlayerPair = false;
+
+      if (playerCardsArray) {
+        hasPlayerPair = playerCardsArray[0] === playerCardsArray[1];
+      }
+
+      const hasPairWithTable = playerCardsArray?.find((card) => tableCardsArray.includes(card));
 
       const risk = 9;
       let riskIndex = 0;
@@ -34,12 +40,14 @@ export class Player {
       })
 
 
-      if (!tableCardsArray.length && riskIndex > risk) {
+      if (hasPlayerPair) {
+        betCallback(player.stack);
+      } else if (!tableCardsArray.length && riskIndex > risk) {
         logger.log('info', 'Execute above risk', { risk, riskIndex });
 
         betCallback(gameState.current_buy_in);
-      } else if (hasPair) {
-        logger.log('info', 'Execute hasPair');
+      } else if (hasPairWithTable) {
+        logger.log('info', 'Execute hasPairWithTable');
 
         betCallback(gameState.current_buy_in);
       } else {
