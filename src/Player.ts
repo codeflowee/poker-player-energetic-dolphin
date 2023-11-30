@@ -31,13 +31,13 @@ export class Player {
 
       const hasPairWithTable = playerCardsArray?.find((card) => tableCardsArray.includes(card));
 
-      const risk = 9;
-      let riskIndex = 0;
+      const riskTolerance = 9;
+      let playerRisk = 0;
       playerCardsArray?.forEach((card) => {
         const cardIndex = cardRankings.ranks.indexOf(card);
 
-        if (cardIndex > riskIndex) {
-          riskIndex = cardIndex;
+        if (cardIndex > playerRisk) {
+          playerRisk = cardIndex;
         }
       })
 
@@ -48,9 +48,9 @@ export class Player {
         console.log('Executing has pair', { playerCardsArray });
 
         betCallback(gameState.current_buy_in);
-      } else if (!tableCardsArray.length && riskIndex > risk) {
-        logger.log('info', 'Execute above risk', { risk, riskIndex });
-        console.log('Execute above risk', { risk, riskIndex });
+      } else if (!tableCardsArray.length && playerRisk > riskTolerance) {
+        logger.log('info', 'Execute above risk', { risk: riskTolerance, playerRisk });
+        console.log('Execute above risk', { risk: riskTolerance, playerRisk });
 
         betCallback(gameState.current_buy_in);
 
