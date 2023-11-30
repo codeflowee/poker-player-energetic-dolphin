@@ -3,7 +3,7 @@ import cardRankings from "./cardRankings";
 import Logsene from "logsene-js";
 import hasPairInHandWithPlayerCards from './rankFunctions/hasPairInHandWithPlayerCards'
 import hasThreeOfKind from "./rankFunctions/hasThreeOfKind";
-import getRank from './getRank';
+// import getRank from './getRank';
 
 const logger = new Logsene('f94e5824-2c17-4c45-a019-92598a343b73');
 export class Player {
@@ -14,7 +14,7 @@ export class Player {
   }
 
   public betRequest(gameState: GameState, betCallback: (bet: number) => void): void {
-    getRank(gameState);
+    // getRank(gameState);
 
     // logger.log('info', 'betRequest', { gameState });
     console.log('betRequest', { gameState });
