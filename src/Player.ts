@@ -20,8 +20,21 @@ export class Player {
 
       const includesTableCard = playerCardsArray?.find((card) => tableCardsArray.includes(card));
 
+      const risk = 9;
+      let riskIndex = 0;
+      playerCardsArray?.forEach((card) => {
+        const cardIndex = cardRankings.ranks.indexOf(card);
+
+        if (cardIndex > riskIndex) {
+          riskIndex = cardIndex;
+        }
+      })
+
+
       if (gameState.bet_index === 0) {
-        betCallback(gameState.current_buy_in)
+        betCallback(gameState.current_buy_in);
+      } else if (riskIndex > risk) {
+        betCallback(gameState.current_buy_in);
       } else if (includesTableCard) {
         betCallback(gameState.current_buy_in);
       } else {
