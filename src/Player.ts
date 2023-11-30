@@ -81,11 +81,13 @@ export class Player {
           this.log('In Game, have pair, calling with ', amount);
           betCallback(amount);
         } else if (highCard) {
-          this.log('In Game, Have above risk tolerance, calling with:', call);
-          betCallback(call);
+          const amount = gameState.current_buy_in > 300 ? 0 : call
+          this.log('In Game, Current buy in', gameState.current_buy_in);
+          this.log('In Game, Have above risk tolerance, calling with:', amount);
+          betCallback(amount);
         } else {
           this.log('In Game, ESLE BLOCK WE ARE FOLDING', 0);
-          betCallback(0);
+          betCallback(gameState.current_buy_in > 300 ? 0 : call);
         }
       }
     }
